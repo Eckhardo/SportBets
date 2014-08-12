@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="CompFamEditDlg" widgetVar="CompFamEditDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.EditCompFamTitle}">
+            <h:form id="CompFamEditForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{compFamController.selected != null}">
+                        <p:outputLabel value="#{bundle.EditCompFamLabel_id}" for="id" />
+                        <p:inputText id="id" value="#{compFamController.selected.id}" title="#{bundle.EditCompFamTitle_id}" required="true" requiredMessage="#{bundle.EditCompFamRequiredMessage_id}"/>
+                        <p:outputLabel value="#{bundle.EditCompFamLabel_name}" for="name" />
+                        <p:inputText id="name" value="#{compFamController.selected.name}" title="#{bundle.EditCompFamTitle_name}" required="true" requiredMessage="#{bundle.EditCompFamRequiredMessage_name}"/>
+                        <p:outputLabel value="#{bundle.EditCompFamLabel_hasclubs}" for="hasclubs" />
+                        <p:selectBooleanCheckbox id="hasclubs" value="#{compFamController.selected.hasclubs}" required="true" requiredMessage="#{bundle.EditCompFamRequiredMessage_hasclubs}"/>
+                        <p:outputLabel value="#{bundle.EditCompFamLabel_hasligamodus}" for="hasligamodus" />
+                        <p:selectBooleanCheckbox id="hasligamodus" value="#{compFamController.selected.hasligamodus}" required="true" requiredMessage="#{bundle.EditCompFamRequiredMessage_hasligamodus}"/>
+                        <p:outputLabel value="#{bundle.EditCompFamLabel_created}" for="created" />
+                        <p:calendar id="created" pattern="MM/dd/yyyy" value="#{compFamController.selected.created}" title="#{bundle.EditCompFamTitle_created}" required="true" requiredMessage="#{bundle.EditCompFamRequiredMessage_created}" showOn="button"/>
+                        <p:outputLabel value="#{bundle.EditCompFamLabel_version}" for="version" />
+                        <p:inputText id="version" value="#{compFamController.selected.version}" title="#{bundle.EditCompFamTitle_version}" />
+                    </p:panelGrid>
+                    <p:commandButton actionListener="#{compFamController.update}" value="#{bundle.Save}" update="display,:CompFamListForm:datalist,:growl" oncomplete="handleSubmit(args, 'CompFamEditDialog');"/>
+                    <p:commandButton value="#{bundle.Cancel}" onclick="CompFamEditDialog.hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

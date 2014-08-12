@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="CompTeamEditDlg" widgetVar="CompTeamEditDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.EditCompTeamTitle}">
+            <h:form id="CompTeamEditForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{compTeamController.selected != null}">
+                        <p:outputLabel value="#{bundle.EditCompTeamLabel_created}" for="created" />
+                        <p:calendar id="created" pattern="MM/dd/yyyy" value="#{compTeamController.selected.created}" title="#{bundle.EditCompTeamTitle_created}" required="true" requiredMessage="#{bundle.EditCompTeamRequiredMessage_created}" showOn="button"/>
+                        <p:outputLabel value="#{bundle.EditCompTeamLabel_team}" for="team" />
+                        <p:selectOneMenu id="team" value="#{compTeamController.selected.team}" required="true" requiredMessage="#{bundle.EditCompTeamRequiredMessage_team}">
+                            <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>
+                            <f:selectItems value="#{teamController.itemsAvailableSelectOne}"
+                                           var="teamItem"  itemLabel="#{teamItem.name}"
+                                           itemValue="#{teamItem}"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel value="#{bundle.EditCompTeamLabel_competition}" for="competition" />
+                        <p:selectOneMenu id="competition" value="#{compTeamController.selected.competition}" required="true" requiredMessage="#{bundle.EditCompTeamRequiredMessage_competition}">
+                            <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>
+                            <f:selectItems value="#{competitionController.itemsAvailableSelectOne}"
+                                           var="competitionItem"  itemLabel="#{competitionItem.name}"
+                                           itemValue="#{competitionItem}"/>
+                        </p:selectOneMenu>
+                    </p:panelGrid>
+                    <p:commandButton actionListener="#{compTeamController.update}" value="#{bundle.Save}" update="display,:CompTeamListForm:datalist,:growl" oncomplete="handleSubmit(args, 'CompTeamEditDialog');"/>
+                    <p:commandButton value="#{bundle.Cancel}" onclick="CompTeamEditDialog.hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

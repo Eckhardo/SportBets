@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="CompGroupEditDlg" widgetVar="CompGroupEditDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.EditCompGroupTitle}">
+            <h:form id="CompGroupEditForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{compGroupController.selected != null}">
+                        <p:outputLabel value="#{bundle.EditCompGroupLabel_id}" for="id" />
+                        <p:inputText id="id" value="#{compGroupController.selected.id}" title="#{bundle.EditCompGroupTitle_id}" required="true" requiredMessage="#{bundle.EditCompGroupRequiredMessage_id}"/>
+                        <p:outputLabel value="#{bundle.EditCompGroupLabel_name}" for="name" />
+                        <p:inputText id="name" value="#{compGroupController.selected.name}" title="#{bundle.EditCompGroupTitle_name}" required="true" requiredMessage="#{bundle.EditCompGroupRequiredMessage_name}"/>
+                        <p:outputLabel value="#{bundle.EditCompGroupLabel_groupnumber}" for="groupnumber" />
+                        <p:inputText id="groupnumber" value="#{compGroupController.selected.groupnumber}" title="#{bundle.EditCompGroupTitle_groupnumber}" required="true" requiredMessage="#{bundle.EditCompGroupRequiredMessage_groupnumber}"/>
+                        <p:outputLabel value="#{bundle.EditCompGroupLabel_created}" for="created" />
+                        <p:calendar id="created" pattern="MM/dd/yyyy" value="#{compGroupController.selected.created}" title="#{bundle.EditCompGroupTitle_created}" required="true" requiredMessage="#{bundle.EditCompGroupRequiredMessage_created}" showOn="button"/>
+                        <p:outputLabel value="#{bundle.EditCompGroupLabel_version}" for="version" />
+                        <p:inputText id="version" value="#{compGroupController.selected.version}" title="#{bundle.EditCompGroupTitle_version}" />
+                        <p:outputLabel value="#{bundle.EditCompGroupLabel_comproundid}" for="comproundid" />
+                        <p:selectOneMenu id="comproundid" value="#{compGroupController.selected.comproundid}" required="true" requiredMessage="#{bundle.EditCompGroupRequiredMessage_comproundid}">
+                            <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>
+                            <f:selectItems value="#{compRoundController.itemsAvailableSelectOne}"
+                                           var="comproundidItem"
+                                           itemValue="#{comproundidItem}"/>
+                        </p:selectOneMenu>
+                    </p:panelGrid>
+                    <p:commandButton actionListener="#{compGroupController.update}" value="#{bundle.Save}" update="display,:CompGroupListForm:datalist,:growl" oncomplete="handleSubmit(args, 'CompGroupEditDialog');"/>
+                    <p:commandButton value="#{bundle.Cancel}" onclick="CompGroupEditDialog.hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>
