@@ -2,7 +2,6 @@ package com.eki.buli.bhtpostgres;
 
 import com.eki.buli.bhtpostgres.util.JsfUtil;
 import com.eki.buli.bhtpostgres.util.JsfUtil.PersistAction;
-
 import java.io.Serializable;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -10,21 +9,27 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
-import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
+import javax.enterprise.event.Event;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import javax.inject.Inject;
+import javax.inject.Named;
+import org.primefaces.event.FlowEvent;
 
 @Named("competitionController")
 @SessionScoped
 public class CompetitionController implements Serializable {
+   private static final Logger log = Logger.getLogger(CompetitionController.class.getName());
 
     @EJB
     private com.eki.buli.bhtpostgres.CompetitionFacade ejbFacade;
     private List<Competition> items = null;
     private Competition selected;
+   private boolean skip;
+ 
 
     public CompetitionController() {
     }
@@ -34,6 +39,7 @@ public class CompetitionController implements Serializable {
     }
 
     public void setSelected(Competition selected) {
+        log.log(Level.WARNING, "selected competition {0}=", selected.getName());
         this.selected = selected;
     }
 
@@ -118,7 +124,23 @@ public class CompetitionController implements Serializable {
     public List<Competition> getItemsAvailableSelectOne() {
         return getFacade().findAll();
     }
-
+    public boolean isSkip() {
+        return skip;
+    }
+ 
+    public void setSkip(boolean skip) {
+        this.skip = skip;
+    }
+     
+    public String onFlowProcess(FlowEvent event) {
+        if(skip) {
+            skip = false;   //reset in case user goes back
+            return "confirm";
+        }
+        else {
+            return event.getNewStep();
+        }
+    } 
     @FacesConverter(forClass = Competition.class)
     public static class CompetitionControllerConverter implements Converter {
 

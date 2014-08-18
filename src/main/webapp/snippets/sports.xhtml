@@ -1,0 +1,31 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+<h:panelGrid columns="3" cellspacing="20">
+
+<p:panelGrid columns="2"  >
+  <f:facet name="header">NFL</f:facet>
+  Ravens
+  <h:outputText value="#{sportsBean.ravens}"/>
+  Redskins
+  <h:outputText value="#{sportsBean.redskins}"/>
+</p:panelGrid>
+<p:panelGrid columns="2">
+  <f:facet name="header">MLB</f:facet>
+  Orioles
+  <h:outputText value="#{sportsBean.orioles}"/>
+  Nationals
+  <h:outputText value="#{sportsBean.nationals}"/>
+</p:panelGrid>
+<p:panelGrid columns="2">
+  <f:facet name="header">Swimming</f:facet>
+  Michael Phelps
+  <h:outputText value="#{sportsBean.phelps}"/>
+  Ryan Lochte
+  <h:outputText value="#{sportsBean.lochte}"/>
+</p:panelGrid>
+
+</h:panelGrid>
+</ui:composition>

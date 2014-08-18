@@ -1,0 +1,78 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+
+    <p:panel header="#{bundle.ListCompetitionTitle}">
+        <p:dataTable id="datalist5" value="#{competitionController.items}" var="item"
+                     selectionMode="single" selection="#{competitionController.selected}"
+                     paginator="true"
+                     rowKey="#{item.id}"
+                     rows="10"
+                     rowsPerPageTemplate="10,20,30,40,50"
+                     >
+            <p:column>
+                <f:facet name="header">
+                    <h:outputText value="#{bundle.ListCompetitionTitle_id}"/>
+                </f:facet>
+                <h:outputText value="#{item.id}"/>
+            </p:column>
+            <p:column>
+                <f:facet name="header">
+                    <h:outputText value="#{bundle.ListCompetitionTitle_version}"/>
+                </f:facet>
+                <h:outputText value="#{item.version}"/>
+            </p:column>
+            <p:column>
+                <f:facet name="header">
+                    <h:outputText value="#{bundle.ListCompetitionTitle_name}"/>
+                </f:facet>
+                <h:outputText value="#{item.name}"/>
+            </p:column>
+            <p:column>
+                <f:facet name="header">
+                    <h:outputText value="#{bundle.ListCompetitionTitle_description}"/>
+                </f:facet>
+                <h:outputText value="#{item.description}"/>
+            </p:column>
+            <p:column>
+                <f:facet name="header">
+                    <h:outputText value="#{bundle.ListCompetitionTitle_isvalid}"/>
+                </f:facet>
+                <h:outputText value="#{item.isvalid}"/>
+            </p:column>
+            <p:column>
+                <f:facet name="header">
+                    <h:outputText value="#{bundle.ListCompetitionTitle_winmulitplicator}"/>
+                </f:facet>
+                <h:outputText value="#{item.winmulitplicator}"/>
+            </p:column>
+            <p:column>
+                <f:facet name="header">
+                    <h:outputText value="#{bundle.ListCompetitionTitle_remismulitplicator}"/>
+                </f:facet>
+                <h:outputText value="#{item.remismulitplicator}"/>
+            </p:column>
+            <p:column>
+                <f:facet name="header">
+                    <h:outputText value="#{bundle.ListCompetitionTitle_created}"/>
+                </f:facet>
+                <h:outputText value="#{item.created}">
+                    <f:convertDateTime pattern="MM/dd/yyyy" />
+                </h:outputText>
+            </p:column>
+            <p:column>
+                <f:facet name="header">
+                    <h:outputText value="#{bundle.ListCompetitionfamilyTitle_name}"/>
+                </f:facet>
+                <h:outputText value="#{item.compfamilyid.name}"/>
+            </p:column>
+
+        </p:dataTable>
+    </p:panel>
+
+
+</ui:composition>
+

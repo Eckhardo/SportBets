@@ -10,12 +10,13 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -45,8 +46,13 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "CompRound.findByCreated", query = "SELECT c FROM CompRound c WHERE c.created = :created"),
     @NamedQuery(name = "CompRound.findByRoundnumber", query = "SELECT c FROM CompRound c WHERE c.roundnumber = :roundnumber"),
     @NamedQuery(name = "CompRound.findByHasgroups", query = "SELECT c FROM CompRound c WHERE c.hasgroups = :hasgroups"),
-    @NamedQuery(name = "CompRound.findByVersion", query = "SELECT c FROM CompRound c WHERE c.version = :version")})
+    @NamedQuery(name = "CompRound.findByVersion", query = "SELECT c FROM CompRound c WHERE c.version = :version"),
+   @NamedQuery(name = "CompRound.findByCompetition", query = "SELECT c FROM CompRound c WHERE c.compid = :competition")})
+
 public class CompRound implements Serializable {
+    
+       private static final Logger log = Logger.getLogger(CompRound.class.getName());
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(generator = "compRoundSeq")
@@ -96,6 +102,8 @@ public class CompRound implements Serializable {
     }
 
     public Integer getId() {
+                    log.log(Level.WARNING, "selected compRound id {0}=", id);
+ 
         return id;
     }
 

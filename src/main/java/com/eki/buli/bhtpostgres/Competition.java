@@ -10,6 +10,8 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -48,6 +50,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Competition.findByCreated", query = "SELECT c FROM Competition c WHERE c.created = :created"),
     @NamedQuery(name = "Competition.findByVersion", query = "SELECT c FROM Competition c WHERE c.version = :version")})
 public class Competition implements Serializable {
+     private static final Logger log = Logger.getLogger(Competition.class.getName());
+
     private static final long serialVersionUID = 1L;
     @Id
   @GeneratedValue(generator = "compSeq")
@@ -104,6 +108,8 @@ public class Competition implements Serializable {
     }
 
     public Integer getId() {
+             log.log(Level.WARNING, "selected competition id {0}=", name);
+  
         return id;
     }
 

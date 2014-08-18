@@ -12,6 +12,7 @@ import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
+import javax.enterprise.event.Observes;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
@@ -25,6 +26,15 @@ public class CompRoundController implements Serializable {
     private com.eki.buli.bhtpostgres.CompRoundFacade ejbFacade;
     private List<CompRound> items = null;
     private CompRound selected;
+    private Competition selectedCompetition;
+
+    public Competition getSelectedCompetition() {
+        return selectedCompetition;
+    }
+
+    public void setSelectedCompetition(Competition selectedCompetition) {
+        this.selectedCompetition = selectedCompetition;
+    }
 
     public CompRoundController() {
     }
@@ -117,6 +127,12 @@ public class CompRoundController implements Serializable {
 
     public List<CompRound> getItemsAvailableSelectOne() {
         return getFacade().findAll();
+    }
+   public void onCompetitionSelected(@Observes Competition selectedCompetition){
+       
+          items= getFacade().findForCompetition(selectedCompetition);
+          this.selectedCompetition=selectedCompetition;
+          
     }
 
     @FacesConverter(forClass = CompRound.class)
