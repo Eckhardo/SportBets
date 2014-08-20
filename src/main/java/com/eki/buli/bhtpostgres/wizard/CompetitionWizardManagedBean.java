@@ -6,6 +6,7 @@
 package com.eki.buli.bhtpostgres.wizard;
 
 import com.eki.buli.bhtpostgres.CompRound;
+import com.eki.buli.bhtpostgres.CompRoundFacade;
 import com.eki.buli.bhtpostgres.Competition;
 import com.eki.buli.bhtpostgres.CompetitionController;
 import com.eki.buli.bhtpostgres.CompetitionFacade;
@@ -41,7 +42,11 @@ public class CompetitionWizardManagedBean implements Serializable {
     private static final Logger log = Logger.getLogger(CompetitionController.class.getName());
 
     @EJB
-    private com.eki.buli.bhtpostgres.CompetitionFacade ejbFacade;
+    private CompetitionFacade compFacade;
+
+    @EJB
+    private CompRoundFacade compRoundFacade;
+
     private List<Competition> competitions = null;
     private Competition selectedComp;
     private CompRound selectedCompRound;
@@ -52,7 +57,6 @@ public class CompetitionWizardManagedBean implements Serializable {
     }
 
     public void setSelectedComp(Competition selectedComp) {
-        log.log(Level.WARNING, "selected competition {0}=", selectedComp.getName());
         this.selectedComp = selectedComp;
     }
 
@@ -70,12 +74,17 @@ public class CompetitionWizardManagedBean implements Serializable {
     protected void initializeEmbeddableKey() {
     }
 
-    private CompetitionFacade getFacade() {
-        return ejbFacade;
+    private CompetitionFacade getCompFacade() {
+        return compFacade;
+    }
+
+    public CompRoundFacade getCompRoundFacade() {
+        return compRoundFacade;
     }
 
     public CompRound prepareCreateCompRound() {
         selectedCompRound = new CompRound();
+      //  selectedCompRound.setId(-1);
         initializeEmbeddableKey();
         log.log(Level.WARNING, "prepare new comp round ");
 
@@ -85,44 +94,79 @@ public class CompetitionWizardManagedBean implements Serializable {
     public void addCompround() {
         selectedComp.getCompRoundCollection().add(selectedCompRound);
         selectedCompRound.setCompid(selectedComp);
-        update();
+        create();
     }
 
     public void create() {
-        persist(JsfUtil.PersistAction.CREATE, ResourceBundle.getBundle("/Bundle").getString("CompetitionCreated"));
+        persistCompRound(JsfUtil.PersistAction.CREATE, ResourceBundle.getBundle("/Bundle").getString("CompRoundCreated"));
         if (!JsfUtil.isValidationFailed()) {
-            competitions = null;    // Invalidate list of items to trigger re-query.
+           selectedComp=getCompetition(selectedComp.getId());    // Invalidate list of items to trigger re-query.
         }
     }
 
     public void update() {
-        persist(JsfUtil.PersistAction.UPDATE, ResourceBundle.getBundle("/Bundle").getString("CompetitionUpdated"));
+        persistCompRound(JsfUtil.PersistAction.UPDATE, ResourceBundle.getBundle("/Bundle").getString("CompetitionUpdated"));
     }
 
-    public void destroy() {
-        persist(JsfUtil.PersistAction.DELETE, ResourceBundle.getBundle("/Bundle").getString("CompetitionDeleted"));
+    public void destroyCompRound() {
+        persistCompRound(JsfUtil.PersistAction.DELETE, ResourceBundle.getBundle("/Bundle").getString("CompRoundDeleted"));
         if (!JsfUtil.isValidationFailed()) {
-            selectedComp = null; // Remove selection
-            competitions = null;    // Invalidate list of competitions to trigger re-query.
+            selectedCompRound = null; // Remove selection
+            selectedComp=getCompetition(selectedComp.getId());
         }
     }
 
     public List<Competition> getCompetitions() {
         if (competitions == null) {
-            competitions = getFacade().findAll();
+            competitions = getCompFacade().findAll();
         }
-        log.log(Level.WARNING, " cometitions size = {0}", competitions == null ? "0" : competitions.size());
+        // log.log(Level.WARNING, " cometitions size = {0}", competitions == null ? "0" : competitions.size());
         return competitions;
     }
 
     private void persist(JsfUtil.PersistAction persistAction, String successMessage) {
-        if (selectedComp != null) {
+//        if (selectedComp != null) {
+//            setEmbeddableKeys();
+//            try {
+//                if (persistAction != JsfUtil.PersistAction.DELETE) {
+//                    selectedComp = getCompFacade().edit(selectedComp);
+//                } else {
+//                    getCompFacade().remove(selectedComp);
+//                }
+//                JsfUtil.addSuccessMessage(successMessage);
+//            } catch (EJBException ex) {
+//                String msg = "";
+//                Throwable cause = ex.getCause();
+//                if (cause != null) {
+//                    msg = cause.getLocalizedMessage();
+//                }
+//                if (msg.length() > 0) {
+//                    JsfUtil.addErrorMessage(msg);
+//                } else {
+//                    JsfUtil.addErrorMessage(ex, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
+//                }
+//            } catch (Exception ex) {
+//                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+//                JsfUtil.addErrorMessage(ex, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
+//            }
+//        }
+    }
+     private void persistCompRound(JsfUtil.PersistAction persistAction, String successMessage) {
+        if (selectedCompRound != null) {
             setEmbeddableKeys();
             try {
-                if (persistAction != JsfUtil.PersistAction.DELETE) {
-                    selectedComp = getFacade().edit(selectedComp);
-                } else {
-                    getFacade().remove(selectedComp);
+                if (persistAction == JsfUtil.PersistAction.DELETE) {
+                    getCompRoundFacade().remove(selectedCompRound);
+                   
+                }
+                else if (persistAction==JsfUtil.PersistAction.CREATE) {
+                    getCompRoundFacade().create(selectedCompRound);
+                }
+                else{
+                     selectedCompRound = getCompRoundFacade().edit(selectedCompRound);
+                }
+ {
+                   
                 }
                 JsfUtil.addSuccessMessage(successMessage);
             } catch (EJBException ex) {
@@ -144,7 +188,7 @@ public class CompetitionWizardManagedBean implements Serializable {
     }
 
     public Competition getCompetition(java.lang.Integer id) {
-        return getFacade().find(id);
+        return getCompFacade().find(id);
     }
 
     public boolean isSkip() {
@@ -157,9 +201,14 @@ public class CompetitionWizardManagedBean implements Serializable {
 
     public String onFlowProcess(FlowEvent event) {
         if (skip) {
+            log.log(Level.WARNING, "flow event =confirm");
+
             skip = false;   //reset in case user goes back
             return "confirm";
         } else {
+            log.log(Level.WARNING, "flow event = {0}", event.getNewStep());
+            log.log(Level.WARNING, "flow event = {0}", event.toString());
+
             return event.getNewStep();
         }
     }

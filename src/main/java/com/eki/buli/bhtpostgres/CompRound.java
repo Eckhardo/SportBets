@@ -102,8 +102,7 @@ public class CompRound implements Serializable {
     }
 
     public Integer getId() {
-                    log.log(Level.WARNING, "selected compRound id {0}=", id);
- 
+            
         return id;
     }
 

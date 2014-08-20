@@ -15,120 +15,13 @@
             <p:log />
             <h:form id="CompetitionWizardForm">
 
-                <p:wizard id="compTabView"  flowListener="#{competitionWizard.onFlowProcess}" showNavBar="#{competitionWizard.selectedComp != null}" >
+                <p:wizard id="compTabView"  flowListener="#{competitionWizard.onFlowProcess}" showNavBar="#{competitionWizard.selectedComp !=null}" >
                     <p:tab id="compTab" title="#{bundle.ListCompetitionTitle}">
-
-
-                        <p:dataTable id="compDataList" value="#{competitionWizard.competitions}" var="comp"
-                                     selectionMode="single" selection="#{competitionWizard.selectedComp}"
-                                     paginator="true"
-                                     rowKey="#{comp.id}"
-                                     rows="10"
-                                     rowsPerPageTemplate="10,20,30,40,50"
-                                     >
-                            <p:ajax event="rowSelect" process="compDataList" update=":#{p:component('compTabView')}" />
-                          <p:column>
-                                <f:facet name="header">
-                                    <h:outputText value="#{bundle.ListCompetitionTitle_id}"/>
-                                </f:facet>
-                                <h:outputText value="#{comp.name}"/>
-                            </p:column>
-             <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="#{bundle.ListCompetitionTitle_isvalid}"/>
-                            </f:facet>
-                            <p:selectBooleanCheckbox value="#{comp.isvalid}" disabled="true"/>
-                        </p:column>
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="#{bundle.ListCompetitionTitle_winmultiplicator}"/>
-                            </f:facet>
-                            <h:outputText value="#{comp.winmultiplicator}"/>
-                        </p:column>
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="#{bundle.ListCompetitionTitle_remismultiplicator}"/>
-                            </f:facet>
-                            <h:outputText value="#{comp.remismultiplicator}"/>
-                        </p:column>
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="#{bundle.ListCompetitionTitle_created}"/>
-                            </f:facet>
-                            <h:outputText value="#{item.created}">
-                                <f:convertDateTime pattern="MM/dd/yyyy" />
-                            </h:outputText>
-                        </p:column>
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="#{bundle.ListCompetitionTitle_version}"/>
-                            </f:facet>
-                            <h:outputText value="#{comp.version}"/>
-                        </p:column>
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="#{bundle.ListCompFamTitle}"/>
-                            </f:facet>
-                            <h:outputText value="#{comp.compfamilyid.name}"/>
-                        </p:column>
-                        </p:dataTable>
-
+                        <ui:include src="WizardCompTab.xhtml"/>
                     </p:tab>
                     <p:tab id="compRoundTab" title="Competition Rounds">
 
-                        <p:panel header="#{bundle.ListCompRoundTitle}">
-                            <p:dataTable id="compRoundDatalist" value="#{competitionWizard.selectedComp.compRoundCollection}" var="compRound"
-                                         selectionMode="single" selection="#{competitionWizard.selectedCompRound}"
-                                         paginator="true"
-                                         rowKey="#{compRound.id}"
-                                         rows="10"
-                                         rowsPerPageTemplate="10,20,30,40,50">
-
-
-                                <p:column>
-                                    <f:facet name="header">
-                                        <h:outputText value="#{bundle.ListCompRoundTitle_version}"/>
-                                    </f:facet>
-                                    <h:outputText value="#{compRound.version}"/>
-                                </p:column>
-                                <p:column>
-                                    <f:facet name="header">
-                                        <h:outputText value="#{bundle.ListCompRoundTitle_roundnumber}"/>
-                                    </f:facet>
-                                    <h:outputText value="#{compRound.roundnumber}"/>
-                                </p:column>
-                                <p:column>
-                                    <f:facet name="header">
-                                        <h:outputText value="#{bundle.ListCompRoundTitle_name}"/>
-                                    </f:facet>
-                                    <h:outputText value="#{compRound.name}"/>
-                                </p:column>
-                                <p:column>
-                                    <f:facet name="header">
-                                        <h:outputText value="#{bundle.ListCompRoundTitle_hasgroups}"/>
-                                    </f:facet>
-                                    <h:outputText value="#{compRound.hasgroups}"/>
-                                </p:column>
-                                <p:column>
-                                    <f:facet name="header">
-                                        <h:outputText value="#{bundle.ListCompRoundTitle_created}"/>
-                                    </f:facet>
-                                    <h:outputText value="#{compRound.created}">
-                                        <f:convertDateTime pattern="MM/dd/yyyy" />
-                                    </h:outputText>
-                                </p:column>
-                                <p:column>
-                                    <f:facet name="header">
-                                        <h:outputText value="#{bundle.ListCompRoundTitle_compid}"/>
-                                    </f:facet>
-                                    <h:outputText value="#{compRound.compid}"/>
-                                </p:column>
-                                <f:facet name="footer">
-                                    <p:commandButton id="createButton" icon="ui-icon-plus"   value="#{bundle.Create}" update=":#{p:component('CompRoundCreateForm')}" actionListener="#{competitionWizard.prepareCreateCompRound()}" oncomplete="PF('CompRoundCreateDialog').show()"/>
-                                </f:facet>
-                            </p:dataTable>
-                        </p:panel>
-
+                        <ui:include src="WizardCompRoundTab.xhtml"/>
 
                     </p:tab>
                     <p:tab title="Finance">
@@ -141,7 +34,7 @@
                 <h:form id="CompRoundCreateForm">
                     <h:panelGroup id="displayCreateCompRound">
                         <p:panelGrid columns="2" rendered="#{competitionWizard.selectedCompRound != null}">
-                              <p:outputLabel value="#{bundle.CreateCompRoundLabel_version}" for="version" />
+                            <p:outputLabel value="#{bundle.CreateCompRoundLabel_version}" for="version" />
                             <p:inputText id="version" value="#{competitionWizard.selectedCompRound.version}" title="#{bundle.CreateCompRoundTitle_version}" />
                             <p:outputLabel value="#{bundle.CreateCompRoundLabel_roundnumber}" for="roundnumber" />
                             <p:inputText id="roundnumber" value="#{competitionWizard.selectedCompRound.roundnumber}" title="#{bundle.CreateCompRoundTitle_roundnumber}" required="true" requiredMessage="#{bundle.CreateCompRoundRequiredMessage_roundnumber}"/>
@@ -154,7 +47,7 @@
                             <p:outputLabel value="#{bundle.CreateCompRoundLabel_compid}" for="compid" />
                             <p:inputText id="compid" value="#{competitionWizard.selectedComp.name}"/>
                         </p:panelGrid>
-                        <p:commandButton actionListener="#{competitionWizard.addCompround()}" value="#{bundle.Save}" update="displayCreateCompRound,:CompetitionWizardForm:compRoundDatalist,:growl"  oncomplete="handleSubmit(args,'CompRoundCreateDialog');"/>
+                        <p:commandButton actionListener="#{competitionWizard.addCompround()}" value="#{bundle.Save}" update="@all"  oncomplete="handleSubmit(args,'CompRoundCreateDialog');"/>
                         <p:commandButton value="#{bundle.Cancel}" onclick="CompRoundCreateDialog.hide()"/>
                     </h:panelGroup>
                 </h:form>

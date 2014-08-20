@@ -108,8 +108,7 @@ public class Competition implements Serializable {
     }
 
     public Integer getId() {
-             log.log(Level.WARNING, "selected competition id {0}=", name);
-  
+       
         return id;
     }
 
