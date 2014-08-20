@@ -5,8 +5,6 @@
  */
 package com.eki.buli.bhtpostgres.wizard;
 
-import com.eki.buli.bhtpostgres.CompRound;
-import com.eki.buli.bhtpostgres.CompRoundFacade;
 import com.eki.buli.bhtpostgres.Competition;
 import com.eki.buli.bhtpostgres.CompetitionController;
 import com.eki.buli.bhtpostgres.CompetitionFacade;
@@ -19,10 +17,12 @@ import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.enterprise.context.SessionScoped;
+import javax.enterprise.event.Event;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import javax.inject.Inject;
 import javax.inject.Named;
 import org.primefaces.event.FlowEvent;
 
@@ -43,76 +43,36 @@ public class CompetitionWizardManagedBean implements Serializable {
 
     @EJB
     private CompetitionFacade compFacade;
-
-    @EJB
-    private CompRoundFacade compRoundFacade;
-
     private List<Competition> competitions = null;
     private Competition selectedComp;
-    private CompRound selectedCompRound;
+
+    @Inject
+    private Event<Competition> competitionChangedEvent;
+
     private boolean skip;
 
-    public Competition getSelectedComp() {
+    public Competition prepareCreate() {
+        selectedComp = new Competition();
+        initializeEmbeddableKey();
         return selectedComp;
     }
 
-    public void setSelectedComp(Competition selectedComp) {
-        this.selectedComp = selectedComp;
-    }
-
-    public CompRound getSelectedCompRound() {
-        return selectedCompRound;
-    }
-
-    public void setSelectedCompRound(CompRound selectedCompRound) {
-        this.selectedCompRound = selectedCompRound;
-    }
-
-    protected void setEmbeddableKeys() {
-    }
-
-    protected void initializeEmbeddableKey() {
-    }
-
-    private CompetitionFacade getCompFacade() {
-        return compFacade;
-    }
-
-    public CompRoundFacade getCompRoundFacade() {
-        return compRoundFacade;
-    }
-
-    public CompRound prepareCreateCompRound() {
-        selectedCompRound = new CompRound();
-      //  selectedCompRound.setId(-1);
-        initializeEmbeddableKey();
-        log.log(Level.WARNING, "prepare new comp round ");
-
-        return selectedCompRound;
-    }
-
-    public void addCompround() {
-        selectedComp.getCompRoundCollection().add(selectedCompRound);
-        selectedCompRound.setCompid(selectedComp);
-        create();
-    }
-
     public void create() {
-        persistCompRound(JsfUtil.PersistAction.CREATE, ResourceBundle.getBundle("/Bundle").getString("CompRoundCreated"));
+        persist(JsfUtil.PersistAction.CREATE, ResourceBundle.getBundle("/Bundle").getString("CompetitionCreated"));
         if (!JsfUtil.isValidationFailed()) {
-           selectedComp=getCompetition(selectedComp.getId());    // Invalidate list of items to trigger re-query.
+            competitions = null;    // Invalidate list of items to trigger re-query.
         }
     }
 
     public void update() {
-        persistCompRound(JsfUtil.PersistAction.UPDATE, ResourceBundle.getBundle("/Bundle").getString("CompetitionUpdated"));
+        persist(JsfUtil.PersistAction.UPDATE, ResourceBundle.getBundle("/Bundle").getString("CompetitionUpdated"));
     }
 
-    public void destroyCompRound() {
-        persistCompRound(JsfUtil.PersistAction.DELETE, ResourceBundle.getBundle("/Bundle").getString("CompRoundDeleted"));
+    public void destroy() {
+        persist(JsfUtil.PersistAction.DELETE, ResourceBundle.getBundle("/Bundle").getString("CompetitionDeleted"));
         if (!JsfUtil.isValidationFailed()) {
-            selectedCompRound = null; // Remove selection
-            selectedComp=getCompetition(selectedComp.getId());
+            selectedComp = null; // Remove selection
+            competitions = null;    // Invalidate list of items to trigger re-query.
         }
     }
 
@@ -125,48 +85,19 @@ public class CompetitionWizardManagedBean implements Serializable {
     }
 
     private void persist(JsfUtil.PersistAction persistAction, String successMessage) {
-//        if (selectedComp != null) {
-//            setEmbeddableKeys();
-//            try {
-//                if (persistAction != JsfUtil.PersistAction.DELETE) {
-//                    selectedComp = getCompFacade().edit(selectedComp);
-//                } else {
-//                    getCompFacade().remove(selectedComp);
-//                }
-//                JsfUtil.addSuccessMessage(successMessage);
-//            } catch (EJBException ex) {
-//                String msg = "";
-//                Throwable cause = ex.getCause();
-//                if (cause != null) {
-//                    msg = cause.getLocalizedMessage();
-//                }
-//                if (msg.length() > 0) {
-//                    JsfUtil.addErrorMessage(msg);
-//                } else {
-//                    JsfUtil.addErrorMessage(ex, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
-//                }
-//            } catch (Exception ex) {
-//                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
-//                JsfUtil.addErrorMessage(ex, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
-//            }
-//        }
-    }
-     private void persistCompRound(JsfUtil.PersistAction persistAction, String successMessage) {
-        if (selectedCompRound != null) {
+        if (selectedComp != null) {
             setEmbeddableKeys();
             try {
                 if (persistAction == JsfUtil.PersistAction.DELETE) {
-                    getCompRoundFacade().remove(selectedCompRound);
-                   
+                    getCompFacade().remove(selectedComp);
+
+                } else if (persistAction == JsfUtil.PersistAction.CREATE) {
+                    getCompFacade().create(selectedComp);
+                } else {
+                    selectedComp = getCompFacade().edit(selectedComp);
                 }
-                else if (persistAction==JsfUtil.PersistAction.CREATE) {
-                    getCompRoundFacade().create(selectedCompRound);
-                }
-                else{
-                     selectedCompRound = getCompRoundFacade().edit(selectedCompRound);
-                }
- {
-                   
+                {
+
                 }
                 JsfUtil.addSuccessMessage(successMessage);
             } catch (EJBException ex) {
@@ -187,8 +118,43 @@ public class CompetitionWizardManagedBean implements Serializable {
         }
     }
 
+    public String onFlowProcess(FlowEvent event) {
+        if (skip) {
+            log.log(Level.WARNING, "flow event =confirm");
+
+            skip = false;   //reset in case user goes back
+            return "confirm";
+        } else {
+            log.log(Level.WARNING, "new flow event = {0}", event.getNewStep());
+            log.log(Level.WARNING, " old flow event = {0}", event.getOldStep());
+            if (event.getOldStep().equals(ResourceBundle.getBundle("/Bundle").getString("TabComp"))
+                    && event.getNewStep().equals(ResourceBundle.getBundle("/Bundle").getString("TabCompRound"))) {
+                competitionChangedEvent.fire(selectedComp);
+            }
+            return event.getNewStep();
+        }
+    }
+
     public Competition getCompetition(java.lang.Integer id) {
         return getCompFacade().find(id);
+    }
+
+    public Competition getSelectedComp() {
+        return selectedComp;
+    }
+
+    public void setSelectedComp(Competition selectedComp) {
+        this.selectedComp = selectedComp;
+    }
+
+    protected void setEmbeddableKeys() {
+    }
+
+    protected void initializeEmbeddableKey() {
+    }
+
+    private CompetitionFacade getCompFacade() {
+        return compFacade;
     }
 
     public boolean isSkip() {
@@ -197,20 +163,6 @@ public class CompetitionWizardManagedBean implements Serializable {
 
     public void setSkip(boolean skip) {
         this.skip = skip;
-    }
-
-    public String onFlowProcess(FlowEvent event) {
-        if (skip) {
-            log.log(Level.WARNING, "flow event =confirm");
-
-            skip = false;   //reset in case user goes back
-            return "confirm";
-        } else {
-            log.log(Level.WARNING, "flow event = {0}", event.getNewStep());
-            log.log(Level.WARNING, "flow event = {0}", event.toString());
-
-            return event.getNewStep();
-        }
     }
 
     @FacesConverter(forClass = Competition.class)

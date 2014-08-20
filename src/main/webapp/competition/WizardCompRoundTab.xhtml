@@ -8,23 +8,18 @@
 
     <ui:composition>
         <p:panel header="#{bundle.MaintainCompRounds} #{competitionWizard.selectedComp.name}"  >
-          
-            <p:dataTable id="compRoundDatalist" value="#{competitionWizard.selectedComp.compRoundCollection}" var="compRound"
-                         selectionMode="single" selection="#{competitionWizard.selectedCompRound}"
+
+            <p:dataTable id="compRoundDatalist" value="#{compRoundController.itemsForComp}" var="compRound"
+                         selectionMode="single" selection="#{compRoundController.selected}"
                          paginator="true"
                          rowKey="#{compRound.id}"
                          rows="10"
                          rowsPerPageTemplate="10,20,30,40,50">
-                <p:ajax event="rowSelect"   update="createButton  deleteButton"/>
-                <p:ajax event="rowUnselect" update="createButton  deleteButton"/>
+                <p:ajax event="rowSelect"   update="createButton editButton  deleteButton"/>
+                <p:ajax event="rowUnselect" update="createButton editButton deleteButton"/>
 
 
-                <p:column>
-                    <f:facet name="header">
-                        <h:outputText value="#{bundle.ListCompRoundTitle_version}"/>
-                    </f:facet>
-                    <h:outputText value="#{compRound.version}"/>
-                </p:column>
+
                 <p:column>
                     <f:facet name="header">
                         <h:outputText value="#{bundle.ListCompRoundTitle_roundnumber}"/>
@@ -41,7 +36,7 @@
                     <f:facet name="header">
                         <h:outputText value="#{bundle.ListCompRoundTitle_hasgroups}"/>
                     </f:facet>
-                    <h:outputText value="#{compRound.hasgroups}"/>
+                    <p:selectBooleanCheckbox id="hasgroups" value="#{compRound.hasgroups}" disabled="true"/>
                 </p:column>
                 <p:column>
                     <f:facet name="header">
@@ -55,11 +50,12 @@
                     <f:facet name="header">
                         <h:outputText value="#{bundle.ListCompRoundTitle_compid}"/>
                     </f:facet>
-                    <h:outputText value="#{compRound.compid}"/>
+                    <h:outputText value="#{compRound.compid.name}"/>
                 </p:column>
                 <f:facet name="footer">
-                    <p:commandButton id="createButton" icon="ui-icon-plus"   value="#{bundle.Create}" update=":#{p:component('CompRoundCreateForm')}" actionListener="#{competitionWizard.prepareCreateCompRound()}" oncomplete="PF('CompRoundCreateDialog').show()"/>
-                    <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{competitionWizard.destroyCompRound()}" update=":growl,compRoundDatalist" disabled="#{empty competitionWizard.selectedCompRound}"/>
+                    <p:commandButton id="createButton" icon="ui-icon-plus"   value="#{bundle.Create}" update=":#{p:component('CompRoundCreateForm')}" actionListener="#{compRoundController.prepareCreate()}" oncomplete="PF('CompRoundCreateDialog').show()"/>
+                    <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{compRoundController.destroy()}" update=":growl,compRoundDatalist" disabled="#{empty compRoundController.selected}"/>
+                    <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":#{p:component('CompRoundEditForm')}" oncomplete="PF('CompRoundEditDialog').show()" disabled="#{empty compRoundController.selected}"/>
 
                 </f:facet>
             </p:dataTable>

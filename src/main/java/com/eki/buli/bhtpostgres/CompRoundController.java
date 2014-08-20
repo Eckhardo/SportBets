@@ -10,21 +10,25 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
-import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.event.Observes;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import javax.inject.Named;
 
 @Named("compRoundController")
 @SessionScoped
 public class CompRoundController implements Serializable {
 
+    private static final Logger log = Logger.getLogger(CompRoundController.class.getName());
+
     @EJB
-    private com.eki.buli.bhtpostgres.CompRoundFacade ejbFacade;
+    private CompRoundFacade compRoundFacade;
+
     private List<CompRound> items = null;
+    private List<CompRound> itemsForComp = null;
     private CompRound selected;
     private Competition selectedCompetition;
 
@@ -53,8 +57,8 @@ public class CompRoundController implements Serializable {
     protected void initializeEmbeddableKey() {
     }
 
-    private CompRoundFacade getFacade() {
-        return ejbFacade;
+    private CompRoundFacade getCompRoundFacade() {
+        return compRoundFacade;
     }
 
     public CompRound prepareCreate() {
@@ -64,10 +68,26 @@ public class CompRoundController implements Serializable {
     }
 
     public void create() {
+    
+        selectedCompetition.getCompRoundCollection().add(selected);
+        selected.setCompid(selectedCompetition);
         persist(PersistAction.CREATE, ResourceBundle.getBundle("/Bundle").getString("CompRoundCreated"));
         if (!JsfUtil.isValidationFailed()) {
             items = null;    // Invalidate list of items to trigger re-query.
         }
+    }
+
+    /**
+     * Observes an Event from Next/
+     *
+     * @param selectedCompetition
+     */
+    public void onCompetitionSelected(@Observes Competition selectedCompetition) {
+        log.log(Level.WARNING, " event observed");
+        this.selectedCompetition = selectedCompetition;
+        this.selected = null;
+        itemsForComp=null;
+
     }
 
     public void update() {
@@ -84,20 +104,30 @@ public class CompRoundController implements Serializable {
 
     public List<CompRound> getItems() {
         if (items == null) {
-            items = getFacade().findAll();
+            items = getCompRoundFacade().findAll();
         }
         return items;
+    }
+
+    public List<CompRound> getItemsForComp() {
+        if (itemsForComp == null) {
+            itemsForComp = getCompRoundFacade().findForCompetition(selectedCompetition);
+        }
+        return itemsForComp;
     }
 
     private void persist(PersistAction persistAction, String successMessage) {
         if (selected != null) {
             setEmbeddableKeys();
             try {
-                if (persistAction != PersistAction.DELETE) {
-                    getFacade().edit(selected);
+                if (persistAction == JsfUtil.PersistAction.DELETE) {
+                    getCompRoundFacade().remove(selected);
+                } else if (persistAction == JsfUtil.PersistAction.CREATE) {
+                    getCompRoundFacade().create(selected);
                 } else {
-                    getFacade().remove(selected);
+                    selected = getCompRoundFacade().edit(selected);
                 }
+
                 JsfUtil.addSuccessMessage(successMessage);
             } catch (EJBException ex) {
                 String msg = "";
@@ -118,21 +148,15 @@ public class CompRoundController implements Serializable {
     }
 
     public CompRound getCompRound(java.lang.Integer id) {
-        return getFacade().find(id);
+        return getCompRoundFacade().find(id);
     }
 
     public List<CompRound> getItemsAvailableSelectMany() {
-        return getFacade().findAll();
+        return getCompRoundFacade().findAll();
     }
 
     public List<CompRound> getItemsAvailableSelectOne() {
-        return getFacade().findAll();
-    }
-   public void onCompetitionSelected(@Observes Competition selectedCompetition){
-       
-          items= getFacade().findForCompetition(selectedCompetition);
-          this.selectedCompetition=selectedCompetition;
-          
+        return getCompRoundFacade().findAll();
     }
 
     @FacesConverter(forClass = CompRound.class)

@@ -12,14 +12,14 @@
         </ui:define>
 
         <ui:define name="body">
-            <p:log />
+        
             <h:form id="CompetitionWizardForm">
 
                 <p:wizard id="compTabView"  flowListener="#{competitionWizard.onFlowProcess}" showNavBar="#{competitionWizard.selectedComp !=null}" >
-                    <p:tab id="compTab" title="#{bundle.ListCompetitionTitle}">
+                    <p:tab id="#{bundle.TabComp}" title="#{bundle.ListCompetitionTitle}">
                         <ui:include src="WizardCompTab.xhtml"/>
                     </p:tab>
-                    <p:tab id="compRoundTab" title="Competition Rounds">
+                    <p:tab id="#{bundle.TabCompRound}" title="Competition Rounds">
 
                         <ui:include src="WizardCompRoundTab.xhtml"/>
 
@@ -29,29 +29,10 @@
                     </p:tab>
                 </p:wizard>
             </h:form>
+            <ui:include src="compRoundDialogs/CreateCompDialog.xhtml"/>
+            <ui:include src="compRoundDialogs/EditCompRoundDialog.xhtml"/>
+       
 
-            <p:dialog id="CompRoundCreateDlg" appendTo="@(body)"  widgetVar="CompRoundCreateDialog"  modal="true" resizable="false" header="#{bundle.CreateCompRoundTitle}">
-                <h:form id="CompRoundCreateForm">
-                    <h:panelGroup id="displayCreateCompRound">
-                        <p:panelGrid columns="2" rendered="#{competitionWizard.selectedCompRound != null}">
-                            <p:outputLabel value="#{bundle.CreateCompRoundLabel_version}" for="version" />
-                            <p:inputText id="version" value="#{competitionWizard.selectedCompRound.version}" title="#{bundle.CreateCompRoundTitle_version}" />
-                            <p:outputLabel value="#{bundle.CreateCompRoundLabel_roundnumber}" for="roundnumber" />
-                            <p:inputText id="roundnumber" value="#{competitionWizard.selectedCompRound.roundnumber}" title="#{bundle.CreateCompRoundTitle_roundnumber}" required="true" requiredMessage="#{bundle.CreateCompRoundRequiredMessage_roundnumber}"/>
-                            <p:outputLabel value="#{bundle.CreateCompRoundLabel_name}" for="name" />
-                            <p:inputText id="name" value="#{competitionWizard.selectedCompRound.name}" title="#{bundle.CreateCompRoundTitle_name}" required="true" requiredMessage="#{bundle.CreateCompRoundRequiredMessage_name}"/>
-                            <p:outputLabel value="#{bundle.CreateCompRoundLabel_hasgroups}" for="hasgroups" />
-                            <p:inputText id="hasgroups" value="#{competitionWizard.selectedCompRound.hasgroups}" title="#{bundle.CreateCompRoundTitle_hasgroups}" required="true" requiredMessage="#{bundle.CreateCompRoundRequiredMessage_hasgroups}"/>
-                            <p:outputLabel value="#{bundle.CreateCompRoundLabel_created}" for="created" />
-                            <p:calendar id="created" pattern="MM/dd/yyyy" value="#{competitionWizard.selectedCompRound.created}" title="#{bundle.EditCompRoundTitle_created}" required="true" requiredMessage="#{bundle.EditCompRoundRequiredMessage_created}" showOn="button"/>
-                            <p:outputLabel value="#{bundle.CreateCompRoundLabel_compid}" for="compid" />
-                            <p:inputText id="compid" value="#{competitionWizard.selectedComp.name}"/>
-                        </p:panelGrid>
-                        <p:commandButton actionListener="#{competitionWizard.addCompround()}" value="#{bundle.Save}" update="@all"  oncomplete="handleSubmit(args,'CompRoundCreateDialog');"/>
-                        <p:commandButton value="#{bundle.Cancel}" onclick="CompRoundCreateDialog.hide()"/>
-                    </h:panelGroup>
-                </h:form>
-            </p:dialog> 
         </ui:define>
     </ui:composition>
 </html>
