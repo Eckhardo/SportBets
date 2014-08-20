@@ -22,7 +22,7 @@
                         <p:outputLabel value="#{bundle.CreateCompRoundLabel_compid}" for="compid" />
                         <p:inputText id="compid" value="#{competitionWizard.selectedComp.name}"/>
                     </p:panelGrid>
-                    <p:commandButton actionListener="#{compRoundController.create()}" value="#{bundle.Save}" update="displayCreateCompRound,:CompetitionWizardForm:compRoundDatalist,:growl"  oncomplete="handleSubmit(args,'CompRoundCreateDialog') ;"/>
+                    <p:commandButton actionListener="#{compRoundController.create()}" value="#{bundle.Save}" update="displayCreateCompRound,:CompetitionWizardForm:compRoundDatalist,:growl"  oncomplete="handleSubmit(args,'CompRoundCreateDialog') CompRoundCreateDialog.hide() ;"/>
                     <p:commandButton value="#{bundle.Cancel}" onclick="CompRoundCreateDialog.hide()"/>
                 </h:panelGroup>
             </h:form>

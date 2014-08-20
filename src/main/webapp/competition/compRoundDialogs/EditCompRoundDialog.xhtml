@@ -23,7 +23,7 @@
                           <p:outputLabel value="#{bundle.EditCompRoundLabel_compid}" for="compid" />
                         <p:inputText id="compid" value="#{competitionWizard.selectedComp.name}"/>
                     </p:panelGrid>
-                    <p:commandButton actionListener="#{compRoundController.update}" value="#{bundle.Save}" update="displayEditCompRound,:CompetitionWizardForm:compRoundDatalist,:growl" oncomplete="handleSubmit(args, 'CompRoundEditDialog') ;"/>
+                    <p:commandButton actionListener="#{compRoundController.update}" value="#{bundle.Save}" update="displayEditCompRound,:CompetitionWizardForm:compRoundDatalist,:growl" oncomplete="handleSubmit(args, 'CompRoundEditDialog') CompRoundEditDialog.hide() ;"/>
                     <p:commandButton value="#{bundle.Cancel}" onclick="CompRoundEditDialog.hide()"/>
                 </h:panelGroup>
             </h:form>

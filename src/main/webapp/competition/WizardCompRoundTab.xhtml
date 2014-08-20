@@ -54,7 +54,7 @@
                 </p:column>
                 <f:facet name="footer">
                     <p:commandButton id="createButton" icon="ui-icon-plus"   value="#{bundle.Create}" update=":#{p:component('CompRoundCreateForm')}" actionListener="#{compRoundController.prepareCreate()}" oncomplete="PF('CompRoundCreateDialog').show()"/>
-                    <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{compRoundController.destroy()}" update=":growl,compRoundDatalist" disabled="#{empty compRoundController.selected}"/>
+                    <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{compRoundController.destroy()}" update=":growl,:CompetitionWizardForm:compRoundDatalist," disabled="#{empty compRoundController.selected}"/>
                     <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":#{p:component('CompRoundEditForm')}" oncomplete="PF('CompRoundEditDialog').show()" disabled="#{empty compRoundController.selected}"/>
 
                 </f:facet>
