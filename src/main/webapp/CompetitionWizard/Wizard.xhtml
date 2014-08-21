@@ -12,27 +12,31 @@
         </ui:define>
 
         <ui:define name="body">
-        
+
             <h:form id="CompetitionWizardForm">
 
-                <p:wizard id="compTabView"  flowListener="#{competitionWizard.onFlowProcess}" showNavBar="#{competitionWizard.selectedComp !=null}" >
-                    <p:tab id="#{bundle.TabComp}" title="#{bundle.ListCompetitionTitle}">
+                <p:wizard id="compTabView"   flowListener="#{competitionWizard.onFlowProcess}" showNavBar="#{competitionWizard.selectedComp !=null}" >
+                    <p:tab id="#{bundle.TabComp}" title="#{bundle.CompetitionTitle}">
                         <ui:include src="WizardCompTab.xhtml"/>
                     </p:tab>
-                    <p:tab id="#{bundle.TabCompRound}" title="Competition Rounds">
-
+                    <p:tab id="#{bundle.TabCompRound}" title="#{bundle.CompRoundTitle}">
                         <ui:include src="WizardCompRoundTab.xhtml"/>
-
                     </p:tab>
-                    <p:tab title="Finance">
+                    <p:tab id="#{bundle.TabCompGroup}" title="#{bundle.CompGroupTitle}">
+                        <ui:include src="WizardCompGroupTab.xhtml"/>
+                    </p:tab>
+                         <p:tab id="#{bundle.TabCompTeams}" title="#{bundle.CompTeamsTitle}">
                         <ui:include src="/snippets/finance.xhtml"/>
                     </p:tab>
+                    <p:tab id="#{bundle.TabCompMatches}" title="#{bundle.CompMatchdayTitle}">
+                        <ui:include src="/snippets/finance.xhtml"/>
+                    </p:tab>
+               
                 </p:wizard>
             </h:form>
-            <ui:include src="compRoundDialogs/CreateCompDialog.xhtml"/>
-            <ui:include src="compRoundDialogs/EditCompRoundDialog.xhtml"/>
-       
-
+            <ui:include src="compDialogs/CompDialogs.xhtml"/>
+            <ui:include src="compRoundDialogs/CompRoundsDialogs.xhtml"/>
+            <ui:include src="compGroupDialogs/CompGroupDialogs.xhtml"/>
         </ui:define>
     </ui:composition>
 </html>

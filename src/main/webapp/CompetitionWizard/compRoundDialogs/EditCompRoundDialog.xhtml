@@ -20,10 +20,10 @@
                         <p:inputText id="roundnumber" value="#{compRoundController.selected.roundnumber}" title="#{bundle.EditCompRoundTitle_roundnumber}" required="true" requiredMessage="#{bundle.EditCompRoundRequiredMessage_roundnumber}"/>
                         <p:outputLabel value="#{bundle.EditCompRoundLabel_hasgroups}" for="hasgroups" />
                         <p:selectBooleanCheckbox id="hasgroups" value="#{compRoundController.selected.hasgroups}" required="true" requiredMessage="#{bundle.EditCompRoundRequiredMessage_hasgroups}"/>
-                          <p:outputLabel value="#{bundle.EditCompRoundLabel_compid}" for="compid" />
-                        <p:inputText id="compid" value="#{competitionWizard.selectedComp.name}"/>
+                        <p:outputLabel value="#{bundle.EditCompRoundLabel_compid}" for="compid" />
+                        <h:outputText id="compid" value="#{competitionWizard.selectedComp.name}"/>
                     </p:panelGrid>
-                    <p:commandButton actionListener="#{compRoundController.update}" value="#{bundle.Save}" update="displayEditCompRound,:CompetitionWizardForm:compRoundDatalist,:growl" oncomplete="handleSubmit(args, 'CompRoundEditDialog') CompRoundEditDialog.hide() ;"/>
+                    <p:commandButton actionListener="#{compRoundController.update}" value="#{bundle.Save}" update=":CompetitionWizardForm:compRoundDatalist,:growl" oncomplete="handleSubmit(args, 'CompRoundEditDialog') CompRoundEditDialog.hide() ;"/>
                     <p:commandButton value="#{bundle.Cancel}" onclick="CompRoundEditDialog.hide()"/>
                 </h:panelGroup>
             </h:form>

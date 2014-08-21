@@ -2,7 +2,6 @@ package com.eki.buli.bhtpostgres;
 
 import com.eki.buli.bhtpostgres.util.JsfUtil;
 import com.eki.buli.bhtpostgres.util.JsfUtil.PersistAction;
-
 import java.io.Serializable;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -11,11 +10,13 @@ import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.enterprise.context.SessionScoped;
+import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import javax.inject.Inject;
 import javax.inject.Named;
 
 @Named("compRoundController")
@@ -32,13 +33,8 @@ public class CompRoundController implements Serializable {
     private CompRound selected;
     private Competition selectedCompetition;
 
-    public Competition getSelectedCompetition() {
-        return selectedCompetition;
-    }
-
-    public void setSelectedCompetition(Competition selectedCompetition) {
-        this.selectedCompetition = selectedCompetition;
-    }
+    @Inject
+    private Event<CompRound> delegateCompRoundEvent;
 
     public CompRoundController() {
     }
@@ -48,7 +44,16 @@ public class CompRoundController implements Serializable {
     }
 
     public void setSelected(CompRound selected) {
+        log.log(Level.WARNING, " selected comp round={0}", selected != null ? selected.getName() : "null");
         this.selected = selected;
+    }
+
+    public Competition getSelectedCompetition() {
+        return selectedCompetition;
+    }
+
+    public void setSelectedCompetition(Competition selectedCompetition) {
+        this.selectedCompetition = selectedCompetition;
     }
 
     protected void setEmbeddableKeys() {
@@ -68,12 +73,13 @@ public class CompRoundController implements Serializable {
     }
 
     public void create() {
-    
+
         selectedCompetition.getCompRoundCollection().add(selected);
         selected.setCompid(selectedCompetition);
         persist(PersistAction.CREATE, ResourceBundle.getBundle("/Bundle").getString("CompRoundCreated"));
         if (!JsfUtil.isValidationFailed()) {
             items = null;    // Invalidate list of items to trigger re-query.
+            itemsForComp = null;
         }
     }
 
@@ -86,8 +92,19 @@ public class CompRoundController implements Serializable {
         log.log(Level.WARNING, " event observed");
         this.selectedCompetition = selectedCompetition;
         this.selected = null;
-        itemsForComp=null;
+        itemsForComp = null;
 
+    }
+
+    /**
+     * Observes an Event from Next/
+     *
+     * @param message
+     */
+    public void onRoundSelected(@Observes String message) {
+        if (message.equals("NextTabCompGroup")) {
+            delegateCompRoundEvent.fire(selected);
+        }
     }
 
     public void update() {
@@ -99,7 +116,7 @@ public class CompRoundController implements Serializable {
         if (!JsfUtil.isValidationFailed()) {
             selected = null; // Remove selection
             items = null;    // Invalidate list of items to trigger re-query.
-            itemsForComp=null;
+            itemsForComp = null;
         }
     }
 
@@ -113,6 +130,10 @@ public class CompRoundController implements Serializable {
     public List<CompRound> getItemsForComp() {
         if (itemsForComp == null) {
             itemsForComp = getCompRoundFacade().findForCompetition(selectedCompetition);
+            if (itemsForComp != null && !itemsForComp.isEmpty()) {
+                selected = itemsForComp.get(0);
+            }
+
         }
         return itemsForComp;
     }

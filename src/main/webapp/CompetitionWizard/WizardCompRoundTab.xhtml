@@ -14,23 +14,26 @@
                          paginator="true"
                          rowKey="#{compRound.id}"
                          rows="10"
-                         rowsPerPageTemplate="10,20,30,40,50">
+                         rowsPerPageTemplate="10,20,30,40,50"
+                         sortBy="#{compRound.roundnumber}"
+                         >
                 <p:ajax event="rowSelect"   update="createButton editButton  deleteButton"/>
                 <p:ajax event="rowUnselect" update="createButton editButton deleteButton"/>
 
 
 
-                <p:column>
-                    <f:facet name="header">
-                        <h:outputText value="#{bundle.ListCompRoundTitle_roundnumber}"/>
-                    </f:facet>
-                    <h:outputText value="#{compRound.roundnumber}"/>
-                </p:column>
+            
                 <p:column>
                     <f:facet name="header">
                         <h:outputText value="#{bundle.ListCompRoundTitle_name}"/>
                     </f:facet>
                     <h:outputText value="#{compRound.name}"/>
+                </p:column>
+                    <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="#{bundle.ListCompRoundTitle_roundnumber}"/>
+                    </f:facet>
+                    <h:outputText value="#{compRound.roundnumber}"/>
                 </p:column>
                 <p:column>
                     <f:facet name="header">
@@ -48,7 +51,7 @@
                 </p:column>
                 <p:column>
                     <f:facet name="header">
-                        <h:outputText value="#{bundle.ListCompRoundTitle_compid}"/>
+                        <h:outputText value="#{bundle.ListCompTeamTitle_competition}"/>
                     </f:facet>
                     <h:outputText value="#{compRound.compid.name}"/>
                 </p:column>

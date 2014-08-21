@@ -12,6 +12,7 @@ import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
+import javax.enterprise.event.Observes;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
@@ -21,10 +22,14 @@ import javax.faces.convert.FacesConverter;
 @SessionScoped
 public class CompGroupController implements Serializable {
 
+    private static final Logger log = Logger.getLogger(CompGroupController.class.getName());
+
     @EJB
     private com.eki.buli.bhtpostgres.CompGroupFacade ejbFacade;
     private List<CompGroup> items = null;
+    private List<CompGroup> itemsForRound = null;
     private CompGroup selected;
+    private CompRound selectedRound;
 
     public CompGroupController() {
     }
@@ -57,6 +62,7 @@ public class CompGroupController implements Serializable {
         persist(PersistAction.CREATE, ResourceBundle.getBundle("/Bundle").getString("CompGroupCreated"));
         if (!JsfUtil.isValidationFailed()) {
             items = null;    // Invalidate list of items to trigger re-query.
+            itemsForRound = null;
         }
     }
 
@@ -69,6 +75,7 @@ public class CompGroupController implements Serializable {
         if (!JsfUtil.isValidationFailed()) {
             selected = null; // Remove selection
             items = null;    // Invalidate list of items to trigger re-query.
+            itemsForRound = null;
         }
     }
 
@@ -79,15 +86,31 @@ public class CompGroupController implements Serializable {
         return items;
     }
 
+    /**
+     * Observes an Event from Next/
+     *
+     * @param selectedCompRound
+     */
+    public void onRoundSelected(@Observes CompRound selectedCompRound) {
+        log.log(Level.WARNING, " event observed");
+        this.selectedRound = selectedCompRound;
+        this.selected = null;
+        itemsForRound = null;
+
+    }
+
     private void persist(PersistAction persistAction, String successMessage) {
         if (selected != null) {
             setEmbeddableKeys();
             try {
-                if (persistAction != PersistAction.DELETE) {
-                    getFacade().edit(selected);
-                } else {
+                if (persistAction == JsfUtil.PersistAction.DELETE) {
                     getFacade().remove(selected);
+                } else if (persistAction == JsfUtil.PersistAction.CREATE) {
+                    getFacade().create(selected);
+                } else {
+                    selected = getFacade().edit(selected);
                 }
+
                 JsfUtil.addSuccessMessage(successMessage);
             } catch (EJBException ex) {
                 String msg = "";
@@ -117,6 +140,18 @@ public class CompGroupController implements Serializable {
 
     public List<CompGroup> getItemsAvailableSelectOne() {
         return getFacade().findAll();
+    }
+
+    public List<CompGroup> getItemsForRound() {
+        if (itemsForRound == null) {
+              log.log(Level.WARNING, " selected round {0}", selectedRound!=null ? selectedRound.getName() :"nothing" );
+            itemsForRound = getFacade().findForCompRound(selectedRound);
+        }
+        return itemsForRound;
+    }
+
+    public void setItemsForRound(List<CompGroup> itemsForRound) {
+        this.itemsForRound = itemsForRound;
     }
 
     @FacesConverter(forClass = CompGroup.class)

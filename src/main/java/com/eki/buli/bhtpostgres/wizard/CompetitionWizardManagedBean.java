@@ -5,6 +5,7 @@
  */
 package com.eki.buli.bhtpostgres.wizard;
 
+import com.eki.buli.bhtpostgres.CompRound;
 import com.eki.buli.bhtpostgres.Competition;
 import com.eki.buli.bhtpostgres.CompetitionController;
 import com.eki.buli.bhtpostgres.CompetitionFacade;
@@ -48,16 +49,22 @@ public class CompetitionWizardManagedBean implements Serializable {
 
     @Inject
     private Event<Competition> competitionChangedEvent;
+    @Inject
+    private Event<String> compRoundChangedEvent;
 
     private boolean skip;
 
     public Competition prepareCreate() {
         selectedComp = new Competition();
         initializeEmbeddableKey();
+        log.log(Level.WARNING, " Create new Comp");
         return selectedComp;
     }
 
     public void create() {
+        //  selectedCompFamily.getCompetitionCollection().add(selectedComp);
+        //  selectedComp.setCompfamilyid(selectedCompFamily);
+
         persist(JsfUtil.PersistAction.CREATE, ResourceBundle.getBundle("/Bundle").getString("CompetitionCreated"));
         if (!JsfUtil.isValidationFailed()) {
             competitions = null;    // Invalidate list of items to trigger re-query.
@@ -130,6 +137,10 @@ public class CompetitionWizardManagedBean implements Serializable {
             if (event.getOldStep().equals(ResourceBundle.getBundle("/Bundle").getString("TabComp"))
                     && event.getNewStep().equals(ResourceBundle.getBundle("/Bundle").getString("TabCompRound"))) {
                 competitionChangedEvent.fire(selectedComp);
+            } else if (event.getOldStep().equals(ResourceBundle.getBundle("/Bundle").getString("TabCompRound"))
+                    && event.getNewStep().equals(ResourceBundle.getBundle("/Bundle").getString("TabCompGroup"))) {
+                compRoundChangedEvent.fire("NextTabCompGroup");
+
             }
             return event.getNewStep();
         }

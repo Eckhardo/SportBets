@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.eki.buli.bhtpostgres;
 
 import java.io.Serializable;
@@ -40,13 +39,16 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "CompGroup.findByName", query = "SELECT c FROM CompGroup c WHERE c.name = :name"),
     @NamedQuery(name = "CompGroup.findByGroupnumber", query = "SELECT c FROM CompGroup c WHERE c.groupnumber = :groupnumber"),
     @NamedQuery(name = "CompGroup.findByCreated", query = "SELECT c FROM CompGroup c WHERE c.created = :created"),
-    @NamedQuery(name = "CompGroup.findByVersion", query = "SELECT c FROM CompGroup c WHERE c.version = :version")})
+    @NamedQuery(name = "CompGroup.findByVersion", query = "SELECT c FROM CompGroup c WHERE c.version = :version"),
+    @NamedQuery(name = "CompGroup.findByCompRound", query = "SELECT c FROM CompGroup c WHERE c.comproundid = :compRound")})
+
 public class CompGroup implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
-   @GeneratedValue(generator = "compGroupSeq")
+    @GeneratedValue(generator = "compGroupSeq")
     @SequenceGenerator(name = "compGroupSeq", sequenceName = "compgroup_id_seq", allocationSize = 5)
-   @Basic(optional = false)
+    @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
     @Basic(optional = false)
@@ -155,5 +157,5 @@ public class CompGroup implements Serializable {
     public String toString() {
         return "com.eki.buli.bhtpostgres.CompGroup[ id=" + id + " ]";
     }
-    
+
 }
